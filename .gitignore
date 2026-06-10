@@ -1,4 +1,22 @@
-/Symmetric/target/
-/Hashing/target/
-/Asymmetric/target/
-/DigitialEnvelope/target/
+# Maven build output
+target/
+**/target/
+
+# Cryptographic material — NUNCA subir (llaves privadas / contenedores / certificados generados)
+*.p12
+*.pfx
+*.jks
+*.cer
+*.crt
+*.key
+*.pem
+
+# IDE
+nbproject/private/
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -14,6 +14,7 @@
         <module>DigitialEnvelope</module>
         <module>DigitalSignature</module>
         <module>PKI</module>
+        <module>TlsProtocol</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
