@@ -12,6 +12,8 @@
         <module>Hashing</module>
         <module>Asymmetric</module>
         <module>DigitialEnvelope</module>
+        <module>DigitalSignature</module>
+        <module>PKI</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
