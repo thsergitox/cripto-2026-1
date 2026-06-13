@@ -31,7 +31,7 @@ public class TlsServer {
 
     public static void main(String[] args) {
         System.out.println("Tls Server!");
-        // datos de la comunicacion
+        // datos de la comunicación
         int puerto = TLS_PORT;
         String keyStorePath = SERVER_TLS_FILENAME;
         String keyStorePassword = KEY_USE_PASSWORD;
@@ -40,22 +40,22 @@ public class TlsServer {
             KeyStore ks = KeyStore.getInstance(PKCS12_KEYSTORE_TYPE);
             ks.load(new FileInputStream(keyStorePath), keyStorePassword.toCharArray());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            // inicializar la fabrica
+            // inicializar la fábrica
             kmf.init(ks, keyStorePassword.toCharArray());
             SSLContext sslContext = SSLContext.getInstance(TLS_VERSION_1_3);
-            // inicializar contexto (TrustManager null = sin mTLS)
+            // inicializar contexto
             sslContext.init(kmf.getKeyManagers(), null, null);
             SSLServerSocketFactory ssf = sslContext.getServerSocketFactory();
             SSLServerSocket serverSocket = (SSLServerSocket) ssf.createServerSocket(puerto);
             // configuramos de forma estricta el uso de TLS 1.3
             serverSocket.setEnabledProtocols(new String[]{TLS_VERSION_1_3});
             System.out.println("[Servidor] Inicio de la escucha de conexiones seguras TLS 1.3 en el puerto " + puerto);
-            // bucle que permite conectar al cliente multiples veces
-            while (true) {
+            // bucle que permite conectar al cliente múltiples veces
+            while(true) {
                 // hilo principal
                 SSLSocket socketClient = (SSLSocket) serverSocket.accept();
-                System.out.println("[Servidor] Nueva solicitud de conexion entrante");
-                // delegar la conexion a un nuevo hilo
+                System.out.println("[Servidor] Nueva solicitud de conexión entrante");
+                // delegar la conexión a un nuevo hilo
                 new Thread(new ClientHandler(socketClient)).start();
             }
         } catch (KeyStoreException ex) {

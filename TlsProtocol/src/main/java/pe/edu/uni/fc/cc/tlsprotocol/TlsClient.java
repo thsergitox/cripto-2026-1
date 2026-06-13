@@ -8,12 +8,15 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.Scanner;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -31,41 +34,56 @@ import static pe.edu.uni.fc.cc.common.Constants.TLS_VERSION_1_3;
 public class TlsClient {
 
     public static void main(String[] args) {
-        System.out.println("Tls Client!");
+        // correccion de configuracion UTF-8
+        System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
+        //
+        System.out.println("Tls Client !!!");
+        // datos de la comunicacion
         String host = "localhost";
         int puerto = TLS_PORT;
         String trustStorePath = CLIENT_TLS_FILENAME;
-        String trustStorePassword = KEY_USE_PASSWORD;
+        String password = KEY_USE_PASSWORD;
 
         try {
-            // cargar el trust store del cliente
-            KeyStore trustStore = KeyStore.getInstance(PKCS12_KEYSTORE_TYPE);
-            trustStore.load(new FileInputStream(trustStorePath), trustStorePassword.toCharArray());
-            // inicializar el TrustManager con el trust store
+            // configurar los datos para la conexion segura en el cliente
+            KeyStore ts = KeyStore.getInstance(PKCS12_KEYSTORE_TYPE);
+            ts.load(new FileInputStream(trustStorePath), password.toCharArray());
+            // Capa de la gestion de confianza
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(trustStore);
-            // inicializar contexto TLS 1.3 (KeyManagers null = sin identidad propia)
+            // inicializar el TrustManager
+            tmf.init(ts);
+            // Capa de infraestructura y configuracion SSLContext
             SSLContext sslContext = SSLContext.getInstance(TLS_VERSION_1_3);
             sslContext.init(null, tmf.getTrustManagers(), null);
-            // crear el socket TLS
+            // Capa de abstraccion de red
             SSLSocketFactory sf = sslContext.getSocketFactory();
-            try (SSLSocket socket = (SSLSocket) sf.createSocket(host, puerto)) {
-                // forzar TLS 1.3
+            // Captura de datos desde la consola
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("[Cliente] Ingresa el texto a enviar (de manera segura) al servidor");
+            String messageToBeSent = scanner.nextLine();
+            // conectar al servidor (localhost)
+            // Capa de transporte seguro
+            try (
+                SSLSocket socket = (SSLSocket) sf.createSocket(host, puerto);
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            ) {
+                // establecer la version del protocolo
                 socket.setEnabledProtocols(new String[]{TLS_VERSION_1_3});
-                // iniciar handshake explicitamente
+                // Ejecutar el handshake TLS
+                System.out.println("[Cliente] Ejecutando handshake TLS ...");
                 socket.startHandshake();
-                System.out.println("[Cliente] Handshake TLS 1.3 OK con " + host + ":" + puerto);
-                System.out.println("[Cliente] Cipher suite negociada: " + socket.getSession().getCipherSuite());
-
-                try (
-                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))
-                ) {
-                    String mensaje = "hola servidor desde el cliente TLS 1.3";
-                    System.out.println("[Cliente] Enviando: " + mensaje);
-                    out.println(mensaje);
-                    String respuesta = in.readLine();
-                    System.out.println("[Cliente] Respuesta del servidor: " + respuesta);
+                System.out.println("[Cliente] Handshake ejecutado satisfactoriamente!");
+                System.out.println("[Cliente] Conectado mediante la suite: " + socket.getSession().getCipherSuite());
+                // enviamos el texto capturado
+                out.println(messageToBeSent);
+                System.out.println("[Cliente] Mensaje enviado!");
+                // Esperamos la respuesta
+                String response = in.readLine();
+                if (response == null || response.isBlank()) {
+                    System.out.println("[Cliente] El servidor no proceso el texto enviado!");
+                } else {
+                    System.out.println("[Cliente] Respuesta descifrada desde el Servidor: " + response);
                 }
             }
         } catch (KeyStoreException ex) {

@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 /**
@@ -18,32 +19,39 @@ import javax.net.ssl.SSLSocket;
  */
 public class ClientHandler implements Runnable {
 
-    private final SSLSocket socketClient;
+    private final SSLSocket socket;
 
-    public ClientHandler(SSLSocket socketClient) {
-        this.socketClient = socketClient;
+    public ClientHandler(SSLSocket socket) {
+        this.socket = socket;
     }
 
     @Override
     public void run() {
         try (
-            BufferedReader in = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
-            PrintWriter out = new PrintWriter(socketClient.getOutputStream(), true)
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         ) {
-            String textoCifrado = in.readLine();
-            System.out.println("[ClientHandler] Texto recibido: " + textoCifrado);
-
-            String respuesta = (textoCifrado == null) ? "" : textoCifrado.toUpperCase();
-            out.println(respuesta);
-            System.out.println("[ClientHandler] Respuesta enviada: " + respuesta);
+            // Protocolo TLS establecido
+            SSLSession session = socket.getSession();
+            System.out.println("[Hilo Servidor] Protocolo establecido: " + session.getProtocol());
+            System.out.println("[Hilo Servidor] Suite de cifrado establecido: " + session.getCipherSuite());
+            // comunicacion con confidencialidad e integridad
+            String messageIn = in.readLine();
+            if (messageIn == null || messageIn.isBlank()) {
+                System.out.println("[Hilo Servidor] El mensaje recibido es invalido! No es procesado");
+            } else {
+                System.out.println("[Hilo Servidor] Mensaje seguro recibido desde el cliente: " + messageIn);
+                // Procesamiento de datos en la Aplicacion
+                String messageOut = messageIn.toUpperCase();
+                System.out.println("[Hilo Servidor] Mensaje fue procesado exitosamente!");
+                // escribir el mensaje de salida
+                out.println(messageOut);
+                System.out.println("[Hilo Servidor] Respuesta cifrada enviada al cliente");
+            }
+            // cierre seguro del protocolo
+            System.out.println("[Hilo Servidor] Conexion segura con el cliente finalizada.");
         } catch (IOException ex) {
             System.getLogger(ClientHandler.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        } finally {
-            try {
-                socketClient.close();
-            } catch (IOException ex) {
-                System.getLogger(ClientHandler.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-            }
         }
     }
 }
