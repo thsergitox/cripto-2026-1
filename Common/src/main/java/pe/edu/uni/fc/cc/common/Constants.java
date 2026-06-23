@@ -21,6 +21,7 @@ public class Constants {
      public static final int AES_CBC_IV_LENGTH = 16;
      public static final int AES_GCM_IV_LENGTH = 12;
      public static final int RSA_KEY_SIZE_2048 = 2048;
+     public static final int RSA_KEY_SIZE_3072 = 3072;
 
 
      public static final String ECC_ALGORITHM = "EC"; // Qué tipo de llave voy a usar (ALGORITMO PARA LA LLAVE)
@@ -29,6 +30,9 @@ public class Constants {
      public static final String RSA_SIGN_ALGORITHM = "SHA256WithRSA";
 
      public static final int TAG_LENGTH = 128;
+
+     public static final String BC_PROVIDER = "BC";
+     public static final String ML_DSA_ALGORITHM = "MLDSA";
 
      // ===== PKI =====
      public static final String BCFIPS_PROVIDER = "BCFIPS";
