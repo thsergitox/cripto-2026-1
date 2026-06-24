@@ -1,5 +1,16 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this licensedeas que te tienes que llevar
+ 1. TLS = RFC 8446 = TLS 1.3. Corre sobre TCP/IP y da las tres garantías C-I-A.
+ 2. Las 3 garantías y sus herramientas: Confidencialidad → AES (simétrico); Integridad → AEAD;
+ Autenticación → firma digital + certificado X.509.
+ 3. Dos fases: handshake (asimétrico, caro, una vez) + transporte (simétrico AES-GCM, rápido, continuo).
+ Eso es cifrado híbrido.
+ 4. El handshake TLS 1.3 es 1-RTT y establece una llave de sesión con forward secrecy vía (EC)DHE.
+ 5. AEAD (AES-GCM) cifra y autentica en una sola operación; TLS 1.3 eliminó los cifradores no-AEAD por
+ seguridad.
+ 6. El servidor se autentica con su certificado X.509 y la cadena se valida contra el trust store (las
+ clases anteriores aplicadas).
+ 7. En Java, TLS = JSSE: KeyManager (identidad),
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package pe.edu.uni.fc.cc.tlsprotocol;
