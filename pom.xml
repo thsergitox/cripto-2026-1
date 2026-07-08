@@ -16,6 +16,7 @@
         <module>PKI</module>
         <module>TlsProtocol</module>
         <module>PQC</module>
+        <module>PKCS11</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

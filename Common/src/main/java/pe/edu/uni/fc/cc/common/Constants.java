@@ -14,6 +14,7 @@ public class Constants {
      public static final String RSA_ALGORITHM = "RSA";
      public static final String TRANSFORMATION_AES_CBC = "AES/CBC/PKCS5Padding";
      public static final String TRANSFORMATION_AES_GCM = "AES/GCM/NoPadding";
+     public static final String TRANSFORMATION_RSA = "RSA/ECB/PKCS1Padding";
      public static final String SHA_256_ALGORITHM = "SHA-256";
      public static final String PBKDF2_WITH_HMAC_SHA_256_ALGORITHM = "PBKDF2WithHmacSHA256";
      public static final byte[] AES_GCM_ADD = "2026-I-CC".getBytes();
@@ -36,7 +37,9 @@ public class Constants {
 
      // ===== PKI =====
      public static final String BCFIPS_PROVIDER = "BCFIPS";
+     public static final String SUNPKCS11_PROVIDER = "SunPKCS11";
      public static final String PKCS12_KEYSTORE_TYPE = "PKCS12";
+     public static final String PKCS11_KEYSTORE_TYPE = "PKCS11";
      public static final String CA_ROOT_CONTAINER_FILENAME = "ca-root.p12";
      public static final String CA_ROOT_ALIAS = "ca-root";
      public static final String END_USER_ALIAS = "end-user";
